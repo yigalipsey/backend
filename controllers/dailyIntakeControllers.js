@@ -1,14 +1,50 @@
 const asyncHandler = require('express-async-handler')
 const User = require('../models/userModel')
 const DailyIntake = require('../models/dailyIntakeModel')
-const { startOfDay } = require('date-fns')
+const { startOfDay, subWeeks } = require('date-fns')
 const { utcToZonedTime } = require('date-fns-tz')
 const clc = require('cli-color')
 
+// const getDailyIntakeByDates = async (req, res) => {
+//   try {
+//     const { date } = req.body // Assuming the date is passed as a query parameter
+
+//     console.log(date)
+
+//     const userId = req.params.id
+//     const user = await User.findById(userId)
+
+//     if (!user) {
+//       return res.status(404).json({ message: 'User not found' })
+//     }
+
+//     //date: date,
+//     const dailyIntake = await DailyIntake.findOne({
+//       user: user._id,
+//     })
+
+//     if (!dailyIntake) {
+//       return res
+//         .status(404)
+//         .json({ message: 'Daily intake not found for the specified date' })
+//     }
+
+//     res.status(200).json({
+//       calories: dailyIntake.calories,
+//       protein: dailyIntake.protein,
+//       fiber: dailyIntake.fiber,
+//       fat: dailyIntake.fat,
+//       carbohydrates: dailyIntake.carbohydrates,
+//       date: dailyIntake.date,
+//     })
+//   } catch (error) {
+//     console.error(error)
+//     res.status(500).json({ message: 'Internal server error' })
+//   }
+// }
+
 const getDailyIntakeByDate = async (req, res) => {
   try {
-    const { date } = req.query // Assuming the date is passed as a query parameter
-
     const userId = req.params.id
     const user = await User.findById(userId)
 
@@ -16,28 +52,22 @@ const getDailyIntakeByDate = async (req, res) => {
       return res.status(404).json({ message: 'User not found' })
     }
 
-    //date: date,
-    const dailyIntake = await DailyIntake.findOne({
-      user: user._id,
-    })
+    const now = new Date()
+    const timeZone = 'Asia/Jerusalem'
+    const zonedNow = utcToZonedTime(now, timeZone)
+    const startOfToday = startOfDay(zonedNow)
 
-    if (!dailyIntake) {
-      return res
-        .status(404)
-        .json({ message: 'Daily intake not found for the specified date' })
-    }
+    // Calculate the start of the week (one week ago)
+    const startOfLastWeek = subWeeks(startOfToday, 1)
 
-    res.status(200).json({
-      calories: dailyIntake.calories,
-      protein: dailyIntake.protein,
-      fiber: dailyIntake.fiber,
-      fat: dailyIntake.fat,
-      carbohydrates: dailyIntake.carbohydrates,
-      date: dailyIntake.date,
+    let lastWeekIntakes = await DailyIntake.find({
+      user: userId,
+      date: { $gte: startOfLastWeek, $lte: zonedNow }, // Use zonedNow as the end time
     })
+    res.json(lastWeekIntakes)
   } catch (error) {
-    console.error(error)
-    res.status(500).json({ message: 'Internal server error' })
+    console.error('Error fetching last week daily intakes:', error)
+    res.status(500).json({ error: 'Failed to fetch last week daily intakes' })
   }
 }
 
