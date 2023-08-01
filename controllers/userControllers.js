@@ -19,6 +19,15 @@ const authUser = async (req, res) => {
         _id: user._id,
         email: user.email,
         isAdmin: user.isAdmin,
+        weight: user.weight,
+        height: user.height,
+        gender: user.gender,
+        age: user.age,
+        fatLossGoal: user.fatLossGoal,
+        dailyCalorieDeficit: user.dailyCalorieDeficit,
+        weeklyCalorieDeficit: user.weeklyCalorieDeficit,
+        activityLevel: user.activityLevel,
+        tdee: user.tdee,
         token: user.generateToken(user._id),
       })
     } else {
