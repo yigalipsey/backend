@@ -60,10 +60,19 @@ const getDailyIntakeByDate = async (req, res) => {
     // Calculate the start of the week (one week ago)
     const startOfLastWeek = subWeeks(startOfToday, 1)
 
+    let isTodayIntake = await DailyIntake.findOne({
+      user: userId,
+      date: { $gte: startOfToday },
+    })
+
+    console.log(clc.yellow('isTodayIntake:'), isTodayIntake)
+
     let lastWeekIntakes = await DailyIntake.find({
       user: userId,
       date: { $gte: startOfLastWeek, $lte: zonedNow }, // Use zonedNow as the end time
     })
+    if (isTodayIntake) {
+    }
     res.json(lastWeekIntakes)
   } catch (error) {
     console.error('Error fetching last week daily intakes:', error)
