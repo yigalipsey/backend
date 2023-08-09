@@ -26,6 +26,16 @@ const dailyIntakeSchema = new mongoose.Schema({
   carbohydrates: {
     type: Number,
   },
+  consumedDishes: [
+    {
+      grams: {
+        type: Number,
+      },
+      dishName: {
+        type: String,
+      },
+    },
+  ],
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

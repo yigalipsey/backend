@@ -69,11 +69,10 @@ const getDailyIntakeByDate = async (req, res) => {
 
     let lastWeekIntakes = await DailyIntake.find({
       user: userId,
-      date: { $gte: startOfLastWeek, $lte: zonedNow }, // Use zonedNow as the end time
+      date: { $gte: startOfLastWeek, $lte: zonedNow },
     })
-    if (isTodayIntake) {
-    }
-    res.json(lastWeekIntakes)
+
+    res.status(200).json(lastWeekIntakes)
   } catch (error) {
     console.error('Error fetching last week daily intakes:', error)
     res.status(500).json({ error: 'Failed to fetch last week daily intakes' })
@@ -82,9 +81,10 @@ const getDailyIntakeByDate = async (req, res) => {
 
 const createOrUpdateDailyIntake = async (req, res) => {
   try {
-    const { calories, protein, fiber, fat, carbohydrates } = req.body
+    const { calories, protein, fiber, fat, carbohydrates, grams, dishName } =
+      req.body
 
-    console.log(calories, protein, fiber, fat, carbohydrates)
+    console.log(calories, protein, fiber, fat, carbohydrates, grams, dishName)
 
     const userId = req.params.id
     const user = await User.findById(userId)
@@ -116,6 +116,12 @@ const createOrUpdateDailyIntake = async (req, res) => {
         fiber: fiber || 0,
         fat: fat || 0,
         carbohydrates: carbohydrates || 0,
+        consumedDishes: [
+          {
+            grams: grams || 0,
+            dishName: dishName || '',
+          },
+        ],
         user: userId,
       })
     } else {
@@ -125,6 +131,14 @@ const createOrUpdateDailyIntake = async (req, res) => {
       todayIntake.fiber += fiber || 0
       todayIntake.fat += fat || 0
       todayIntake.carbohydrates += carbohydrates || 0
+
+      // Add the consumed dish to the consumedDishes array
+      const consumedDish = {
+        grams: grams || 0,
+        dishName: dishName || '',
+      }
+
+      todayIntake.consumedDishes.push(consumedDish)
     }
 
     await todayIntake.save()
@@ -149,8 +163,38 @@ const deleteAllDailyIntakes = async (req, res) => {
   }
 }
 
+const getConsumedDishes = async (req, res) => {
+  try {
+    const now = new Date()
+    const timeZone = 'Asia/Jerusalem'
+    const zonedNow = utcToZonedTime(now, timeZone)
+    const startOfToday = startOfDay(zonedNow)
+
+    console.log(startOfToday)
+
+    const userId = req.params.id
+
+    const todayIntake = await DailyIntake.findOne({
+      user: userId,
+      date: { $gte: startOfToday },
+    })
+
+    if (!todayIntake) {
+      return res.status(404).json({ message: 'No intake for this user today' })
+    }
+
+    const consumedDishes = todayIntake.consumedDishes
+
+    res.json({ consumedDishes })
+  } catch (error) {
+    console.error('Error fetching consumed dishes:', error)
+    res.status(500).json({ message: 'Server Error' })
+  }
+}
+
 module.exports = {
   getDailyIntakeByDate,
   createOrUpdateDailyIntake,
   deleteAllDailyIntakes,
+  getConsumedDishes,
 }
