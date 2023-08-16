@@ -8,11 +8,17 @@ const dailyIntakeRoutes = require('./routes/dailyIntakeRoutes')
 const cors = require('cors')
 const connectDB = require('./config/db')
 
+//te
+const morgan = require('morgan')
+
 require('dotenv').config()
 
 connectDB()
 
 const app = express()
+
+// Use morgan middleware for logging
+app.use(morgan('dev'))
 
 // Middleware
 app.use(express.json())

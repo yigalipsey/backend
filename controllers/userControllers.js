@@ -102,6 +102,11 @@ const registerUser = asyncHandler(async (req, res) => {
         height: user.height,
         gender: user.gender,
         isAdmin: user.isAdmin,
+        fatLossGoal: user.fatLossGoal,
+        dailyCalorieDeficit: user.dailyCalorieDeficit,
+        weeklyCalorieDeficit: user.weeklyCalorieDeficit,
+        activityLevel: user.activityLevel,
+        tdee: user.tdee,
         token: user.generateToken(user._id),
       })
     } else {
@@ -136,39 +141,23 @@ const getUserProfile = asyncHandler(async (req, res) => {
 const updateUserProfile = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id)
 
-  console.log(req.body.address)
-
   if (user) {
-    user.name = req.body.name || user.name
     user.email = req.body.email || user.email
-    user.address.address = req.body.address.address || user.address.address
-    user.address.city = req.body.address.city || user.address.city
-    user.address.postalCode =
-      req.body.address.postalCode || user.address.postalCode
-    user.address.phoneNumber =
-      req.body.address.phoneNumber || user.address.phoneNumber
+
     if (req.body.password) {
       user.password = req.body.password
     }
 
-    const updateUser = await user.save()
+    const updatedUser = await user.save()
 
     res.json({
-      _id: updateUser._id,
-      name: updateUser.name,
-      email: updateUser.email,
-      address: {
-        address: updateUser.address.address,
-        city: updateUser.address.city,
-        postalCode: updateUser.address.postalCode,
-        phoneNumber: updateUser.address.phoneNumber,
-      },
-      isAdmin: updateUser.isAdmin,
-      token: generateToken(updateUser._id),
+      _id: updatedUser._id,
+      email: updatedUser.email,
+      token: updatedUser.generateToken(updatedUser._id),
     })
   } else {
     res.status(404)
-    throw new Error('המשתמש לא נמצא')
+    throw new Error('User not found')
   }
 })
 
@@ -197,9 +186,9 @@ const calculateTDEE = (user) => {
 
   let bmr
   if (gender === 'male') {
-    bmr = 88.362 + 13.397 * weight + 4.799 * height - 5.677 * age
+    bmr = 88.362 + 13.397 * weight + 4.799 * height - 5.677 * age - 150
   } else {
-    bmr = 447.593 + 9.247 * weight + 3.098 * height - 4.33 * age
+    bmr = 447.593 + 9.247 * weight + 3.098 * height - 4.33 * age - 150
   }
 
   // Get the selected activity level multiplier
