@@ -14,7 +14,6 @@ const authUser = async (req, res) => {
       throw new Error('יוזר לא קיים במערכת')
     }
     if (user && (await user.matchPassword(password))) {
-      console.log(user)
       res.json({
         _id: user._id,
         email: user.email,
@@ -27,6 +26,7 @@ const authUser = async (req, res) => {
         dailyCalorieDeficit: user.dailyCalorieDeficit,
         weeklyCalorieDeficit: user.weeklyCalorieDeficit,
         activityLevel: user.activityLevel,
+        numOfWeeks: user.numOfWeeks,
         tdee: user.tdee,
         token: user.generateToken(user._id),
       })
@@ -39,7 +39,6 @@ const authUser = async (req, res) => {
 }
 
 const registerUser = asyncHandler(async (req, res) => {
-  console.log('menase')
   try {
     const {
       email,
@@ -49,7 +48,7 @@ const registerUser = asyncHandler(async (req, res) => {
       height,
       gender,
       fatLossGoal,
-      weeklyFatLossRate,
+      numOfWeeks,
       activityLevel,
     } = req.body
 
@@ -70,7 +69,7 @@ const registerUser = asyncHandler(async (req, res) => {
     // Calculate the calorie deficit based on the weight loss goal and weekly rate
     const calorieDeficitData = calculateCalorieDeficit(
       fatLossGoal,
-      weeklyFatLossRate,
+      numOfWeeks,
       tdee
     )
 
@@ -91,6 +90,7 @@ const registerUser = asyncHandler(async (req, res) => {
       weeklyCalorieDeficit,
       dailyCalorieDeficit,
       targetCaloriesPerDay,
+      numOfWeeks,
     })
 
     if (user) {
@@ -139,25 +139,42 @@ const getUserProfile = asyncHandler(async (req, res) => {
 // @route       PUT /api/users/profile
 // @access      Private
 const updateUserProfile = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id)
+  try {
+    const user = await User.findById(req.user._id)
 
-  if (user) {
+    if (!user) {
+      res.status(404)
+      throw new Error('User not found')
+    }
+
     user.email = req.body.email || user.email
 
     if (req.body.password) {
       user.password = req.body.password
     }
 
+    if (req.body.age) {
+      console.log('Updating age:', req.body.age)
+      user.age = req.body.age
+    }
+
+    if (req.body.weight) {
+      console.log('Updating weight:', req.body.weight)
+      user.weight = req.body.weight
+    }
+
     const updatedUser = await user.save()
+
+    console.log('User updated successfully:', updatedUser) // Log the updated user object
 
     res.json({
       _id: updatedUser._id,
       email: updatedUser.email,
       token: updatedUser.generateToken(updatedUser._id),
     })
-  } else {
-    res.status(404)
-    throw new Error('User not found')
+  } catch (error) {
+    console.error('Error:', error) // Log the error
+    res.status(500).json({ error: 'Internal Server Error' })
   }
 })
 

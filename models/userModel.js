@@ -44,6 +44,9 @@ const userSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  numOfWeeks: {
+    type: Number,
+  },
   activityLevel: {
     type: String,
     required: true,
