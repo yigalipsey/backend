@@ -56,6 +56,17 @@ const userSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  userDishes: [
+    {
+      dishName: { type: String, required: true },
+      calories: { type: Number, required: true },
+      protein_g: { type: Number },
+      carbohydrates_total_g: { type: Number },
+      fat_total_g: { type: Number },
+      fiber_g: { type: Number },
+      serving_size_g: { type: Number, default: 100 },
+    },
+  ],
 })
 
 userSchema.methods.matchPassword = async function (enteredPassword) {

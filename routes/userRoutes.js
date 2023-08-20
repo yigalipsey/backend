@@ -3,6 +3,7 @@ const {
   authUser,
   getUserProfile,
   registerUser,
+  addDishOfUser,
   updateUserProfile,
   deleteAllUsers,
 } = require('../controllers/userControllers.js')
@@ -12,7 +13,7 @@ const router = express.Router()
 
 router.post('/', registerUser)
 router.post('/login', authUser)
-
+router.post('/add-dish', protect, addDishOfUser)
 router
   .get('/profile', protect, getUserProfile)
   .put('/profile', protect, updateUserProfile)

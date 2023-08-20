@@ -14,7 +14,7 @@ const authUser = async (req, res) => {
       throw new Error('יוזר לא קיים במערכת')
     }
     if (user && (await user.matchPassword(password))) {
-      res.json({
+      const responseData = {
         _id: user._id,
         email: user.email,
         isAdmin: user.isAdmin,
@@ -29,7 +29,13 @@ const authUser = async (req, res) => {
         numOfWeeks: user.numOfWeeks,
         tdee: user.tdee,
         token: user.generateToken(user._id),
-      })
+      }
+
+      if (user.userDishes) {
+        responseData.userDishes = user.userDishes
+      }
+
+      res.json(responseData)
     } else {
       res.status(401).json({ message: 'סיסמא לא נכונה' })
     }
@@ -38,7 +44,7 @@ const authUser = async (req, res) => {
   }
 }
 
-const registerUser = asyncHandler(async (req, res) => {
+const registerUser = async (req, res) => {
   try {
     const {
       email,
@@ -115,7 +121,7 @@ const registerUser = asyncHandler(async (req, res) => {
   } catch (error) {
     res.status(400).json({ message: error.message })
   }
-})
+}
 
 // @desc   get user profile
 // @route  GET /api/users/profile
@@ -178,6 +184,57 @@ const updateUserProfile = asyncHandler(async (req, res) => {
   }
 })
 
+// @desc    Add a dish to user's array of dishes
+// @route   POST /api/users/add-dish
+// @access  Private
+const addDishOfUser = asyncHandler(async (req, res) => {
+  const {
+    dishName,
+    calories,
+    carbohydrates_total_g,
+    protein_g,
+    fat_total_g,
+    fiber_g,
+  } = req.body
+  const userId = req.user._id
+
+  console.log('Incoming request for adding dish:', dishName, calories)
+
+  try {
+    const user = await User.findById(userId)
+
+    if (!user) {
+      console.log('User not found.')
+      res.status(404)
+      throw new Error('User not found')
+    }
+
+    if (!user.userDishes) {
+      user.userDishes = [] // Initialize the userDishes array if it's not present
+    }
+
+    const newDish = {
+      dishName,
+      calories,
+      carbohydrates_total_g,
+      protein_g,
+      fat_total_g,
+      fiber_g,
+    }
+    user.userDishes.push(newDish)
+
+    const updatedUser = await user.save()
+    console.log(updatedUser.userDishes)
+
+    res.status(201).json({
+      userDishes: updatedUser.userDishes,
+    })
+  } catch (error) {
+    console.error('Error:', error)
+    res.status(500).json({ message: 'Internal Server Error' })
+  }
+})
+
 const deleteAllUsers = async () => {
   try {
     const users = await User.find({})
@@ -237,6 +294,7 @@ module.exports = {
   authUser,
   getUserProfile,
   registerUser,
+  addDishOfUser,
   deleteAllUsers,
   updateUserProfile,
 }
