@@ -80,11 +80,12 @@ const getDailyIntakeByDate = async (req, res) => {
 }
 
 const createOrUpdateDailyIntake = async (req, res) => {
+  console.log('kara')
   try {
     const { calories, protein, fiber, fat, carbohydrates, grams, dishName } =
       req.body
 
-    console.log(calories, protein, fiber, fat, carbohydrates, grams, dishName)
+    console.log(calories)
 
     const userId = req.params.id
     const user = await User.findById(userId)
