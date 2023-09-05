@@ -26,6 +26,7 @@ const authUser = async (req, res) => {
         dailyCalorieDeficit: user.dailyCalorieDeficit,
         weeklyCalorieDeficit: user.weeklyCalorieDeficit,
         activityLevel: user.activityLevel,
+        targetCaloriesPerDay: user.targetCaloriesPerDay,
         numOfWeeks: user.numOfWeeks,
         tdee: user.tdee,
         token: user.generateToken(user._id),
@@ -111,6 +112,7 @@ const registerUser = async (req, res) => {
         fatLossGoal: user.fatLossGoal,
         dailyCalorieDeficit: user.dailyCalorieDeficit,
         weeklyCalorieDeficit: user.weeklyCalorieDeficit,
+        targetCaloriesPerDay: user.targetCaloriesPerDay,
         activityLevel: user.activityLevel,
         tdee: user.tdee,
         token: user.generateToken(user._id),
@@ -157,26 +159,71 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 
     if (req.body.password) {
       user.password = req.body.password
-    }
+    } else {
+      const {
+        gender,
+        age,
+        weight,
+        height,
+        fatLossGoal,
+        numOfWeeks,
+        activityLevel,
+      } = req.body
 
-    if (req.body.age) {
-      console.log('Updating age:', req.body.age)
       user.age = req.body.age
-    }
-
-    if (req.body.weight) {
-      console.log('Updating weight:', req.body.weight)
       user.weight = req.body.weight
+      user.fatLossGoal = req.body.fatLossGoal
+      user.numOfWeeks = req.body.numOfWeeks
+      user.height = req.body.height
+      user.activityLevel = req.body.activityLevel
+
+      // Calculate the TDEE
+      const tdee = calculateTDEE({
+        gender,
+        weight,
+        height,
+        age,
+        activityLevel,
+      })
+
+      // Calculate the calorie deficit based on the weight loss goal and weekly rate
+      const calorieDeficitData = calculateCalorieDeficit(
+        fatLossGoal,
+        numOfWeeks,
+        tdee
+      )
+
+      // Extract the relevant data from the calorieDeficitData object
+      const {
+        weeklyCalorieDeficit,
+        dailyCalorieDeficit,
+        targetCaloriesPerDay,
+      } = calorieDeficitData
+
+      user.tdee = tdee
+      user.dailyCalorieDeficit = dailyCalorieDeficit
+      user.weeklyCalorieDeficit = weeklyCalorieDeficit
+      user.targetCaloriesPerDay = targetCaloriesPerDay
     }
 
     const updatedUser = await user.save()
 
-    console.log('User updated successfully:', updatedUser) // Log the updated user object
-
     res.json({
       _id: updatedUser._id,
       email: updatedUser.email,
-      token: updatedUser.generateToken(updatedUser._id),
+      isAdmin: updatedUser.isAdmin,
+      weight: updatedUser.weight,
+      height: updatedUser.height,
+      gender: updatedUser.gender,
+      age: updatedUser.age,
+      fatLossGoal: updatedUser.fatLossGoal,
+      dailyCalorieDeficit: updatedUser.dailyCalorieDeficit,
+      targetCaloriesPerDay: updatedUser.targetCaloriesPerDay,
+      weeklyCalorieDeficit: updatedUser.weeklyCalorieDeficit,
+      activityLevel: updatedUser.activityLevel,
+      numOfWeeks: updatedUser.numOfWeeks,
+      tdee: updatedUser.tdee,
+      token: updatedUser.generateToken(user._id),
     })
   } catch (error) {
     console.error('Error:', error) // Log the error
