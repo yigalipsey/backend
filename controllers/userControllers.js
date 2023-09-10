@@ -257,7 +257,7 @@ const addDishOfUser = asyncHandler(async (req, res) => {
     }
 
     if (!user.userDishes) {
-      user.userDishes = [] // Initialize the userDishes array if it's not present
+      user.userDishes = []
     }
 
     const newDish = {
@@ -274,6 +274,48 @@ const addDishOfUser = asyncHandler(async (req, res) => {
     console.log(updatedUser.userDishes)
 
     res.status(201).json({
+      userDishes: updatedUser.userDishes,
+    })
+  } catch (error) {
+    console.error('Error:', error)
+    res.status(500).json({ message: 'Internal Server Error' })
+  }
+})
+
+// @desc    Delete a dish from user's array of dishes
+// @route   DELETE /api/users/delete-dish/:dishId
+// @access  Private
+const deleteDishOfUser = asyncHandler(async (req, res) => {
+  const dishId = req.params.dishId
+  const userId = req.user._id
+
+  console.log(dishId.red.underline)
+
+  try {
+    const user = await User.findById(userId)
+
+    if (!user) {
+      res.status(404)
+      throw new Error('User not found')
+    }
+
+    // Find the index of the dish to delete based on dishId
+    const dishIndex = user.userDishes.findIndex(
+      (dish) => dish._id.toString() === dishId
+    )
+
+    if (dishIndex === -1) {
+      res.status(404)
+      throw new Error("Dish not found in user's array of dishes")
+    }
+
+    // Remove the dish at the found index
+    user.userDishes.splice(dishIndex, 1)
+
+    // Save the updated user object
+    const updatedUser = await user.save()
+
+    res.status(200).json({
       userDishes: updatedUser.userDishes,
     })
   } catch (error) {
@@ -344,4 +386,5 @@ module.exports = {
   addDishOfUser,
   deleteAllUsers,
   updateUserProfile,
+  deleteDishOfUser,
 }

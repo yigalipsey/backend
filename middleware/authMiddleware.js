@@ -4,11 +4,12 @@ const User = require('../models/userModel.js')
 
 const protect = asyncHandler(async (req, res, next) => {
   let token
-
+  console.log('auth'.red.underline)
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith('Bearer')
   ) {
+    console.log('auth'.red.underline)
     try {
       token = req.headers.authorization.split(' ')[1]
 
@@ -18,6 +19,7 @@ const protect = asyncHandler(async (req, res, next) => {
 
       next()
     } catch (err) {
+      console.log('error')
       console.error(err)
       res.status(401)
       throw new Error('אין הרשאה')

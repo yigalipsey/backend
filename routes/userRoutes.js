@@ -6,6 +6,7 @@ const {
   addDishOfUser,
   updateUserProfile,
   deleteAllUsers,
+  deleteDishOfUser,
 } = require('../controllers/userControllers.js')
 const { protect } = require('../middleware/authMiddleware.js')
 
@@ -18,5 +19,6 @@ router
   .get('/profile', protect, getUserProfile)
   .put('/profile', protect, updateUserProfile)
 router.delete('/deleteAllUsers', deleteAllUsers)
+router.delete('/deleteDish/:dishId', protect, deleteDishOfUser)
 
 module.exports = router
