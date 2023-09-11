@@ -274,7 +274,7 @@ const addDishOfUser = asyncHandler(async (req, res) => {
     console.log(updatedUser.userDishes)
 
     res.status(201).json({
-      userDishes: updatedUser.userDishes,
+      updatedUser,
     })
   } catch (error) {
     console.error('Error:', error)
@@ -316,7 +316,7 @@ const deleteDishOfUser = asyncHandler(async (req, res) => {
     const updatedUser = await user.save()
 
     res.status(200).json({
-      userDishes: updatedUser.userDishes,
+      updatedUser,
     })
   } catch (error) {
     console.error('Error:', error)
