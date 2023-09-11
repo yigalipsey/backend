@@ -28,13 +28,14 @@ const authUser = async (req, res) => {
         activityLevel: user.activityLevel,
         targetCaloriesPerDay: user.targetCaloriesPerDay,
         numOfWeeks: user.numOfWeeks,
+        userDishes: user.userDishes,
         tdee: user.tdee,
         token: user.generateToken(user._id),
       }
 
-      if (user.userDishes) {
-        responseData.userDishes = user.userDishes
-      }
+      // if (user.userDishes) {
+      //   responseData.userDishes = user.userDishes
+      // }
 
       res.json(responseData)
     } else {
