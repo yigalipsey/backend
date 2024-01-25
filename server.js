@@ -11,6 +11,8 @@ const connectDB = require('./config/db')
 //te
 const morgan = require('morgan')
 
+//check
+
 require('dotenv').config()
 
 connectDB()
