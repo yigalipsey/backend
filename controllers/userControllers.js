@@ -380,6 +380,10 @@ const calculateCalorieDeficit = (weightLossGoal, weeksToReachGoal, tdee) => {
   }
 }
 
+const ping = (req, res) => {
+  res.status(200).send('Server awake!')
+}
+
 module.exports = {
   authUser,
   getUserProfile,
@@ -388,4 +392,5 @@ module.exports = {
   deleteAllUsers,
   updateUserProfile,
   deleteDishOfUser,
+  ping,
 }
