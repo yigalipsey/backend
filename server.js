@@ -36,7 +36,7 @@ app.use('/api/daily_intake', dailyIntakeRoutes)
 app.use(notFound)
 app.use(errorHandler)
 
-const PORT = process.env.PORT || 4000
+const PORT = process.env.PORT || 8080
 
 // Start the server
 app.listen(PORT, () => {
