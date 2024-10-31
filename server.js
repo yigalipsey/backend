@@ -25,7 +25,14 @@ app.use(morgan('dev'))
 // Middleware
 app.use(express.json())
 app.use(bodyParser.json())
-app.use(cors())
+app.use(cors({
+  origin: 'https://www.yigalipsey-fantasy.com', // אפשר את הדומיין שלך
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
+
+// Middleware שמאפשר לכל נתיב לקבל בקשות OPTIONS
+app.options('*', cors());
 
 // Routes
 app.use('/api/translate', translateRoutes)
