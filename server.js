@@ -27,7 +27,7 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use(
   cors({
-    origin: "https://www.yigalipsey-fantasy.com", // אפשר את הדומיין שלך
+    origin: "https://www.yigalipsey-fittnes.com", // אפשר את הדומיין שלך
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
   })
@@ -46,6 +46,8 @@ app.use(notFound);
 app.use(errorHandler);
 
 const PORT = 8080;
+
+console.log("Secret key:", process.env.SECRET);
 
 // Start the server
 app.listen(PORT, () => {
