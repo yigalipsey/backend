@@ -1,6 +1,1 @@
-runtime: nodejs18 # ודא שגרסת Node תואמת לגרסה שלך
 
-env_variables:
-  MONGO_URI: "mongodb+srv://my-mongo:sisma1234M@cluster0.ch6uxw2.mongodb.net/?retryWrites=true&w=majority"
-  PORT: "8080"
-  JWT_SECRET: "ninjadojoshifuyoshimarioluigipeachbowser"
