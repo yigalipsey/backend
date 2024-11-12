@@ -27,7 +27,7 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use(
   cors({
-    origin: "https://www.yigalipsey-fittnes.com", // אפשר את הדומיין שלך
+    origin: ["https://www.yigalipsey-fittnes.com"], // תמיכה גם בלוקאל וגם בדומיין שלך
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
   })

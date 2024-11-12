@@ -1,4 +1,4 @@
-const express = require('express')
+const express = require("express");
 const {
   authUser,
   getUserProfile,
@@ -8,19 +8,19 @@ const {
   deleteAllUsers,
   deleteDishOfUser,
   ping,
-} = require('../controllers/userControllers.js')
-const { protect } = require('../middleware/authMiddleware.js')
+} = require("../controllers/userControllers.js");
+const { protect } = require("../middleware/authMiddleware.js");
 
-const router = express.Router()
+const router = express.Router();
 
-router.get('/ping', ping)
-router.post('/', registerUser)
-router.post('/login', authUser)
-router.post('/add-dish', protect, addDishOfUser)
+router.get("/ping", ping);
+router.post("/", registerUser);
+router.post("/login", authUser);
+router.post("/add-dish", protect, addDishOfUser);
 router
-  .get('/profile', protect, getUserProfile)
-  .put('/profile', protect, updateUserProfile)
-router.delete('/deleteAllUsers', deleteAllUsers)
-router.delete('/deleteDish/:dishId', protect, deleteDishOfUser)
+  .get("/profile", protect, getUserProfile)
+  .put("/profile", protect, updateUserProfile);
+router.delete("/deleteAllUsers", deleteAllUsers);
+router.delete("/deleteDish/:dishId", protect, deleteDishOfUser);
 
-module.exports = router
+module.exports = router;
