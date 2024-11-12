@@ -1,4 +1,4 @@
-const express = require('express')
+const express = require("express");
 // const requireAuth = require('../midellware/requireAuth')
 
 // controller functions
@@ -7,14 +7,14 @@ const {
   createOrUpdateDailyIntake,
   deleteAllDailyIntakes,
   getConsumedDishes,
-} = require('../controllers/dailyIntakeControllers')
+} = require("../controllers/dailyIntakeControllers");
 
-const router = express.Router()
+const router = express.Router();
 
 // create player route
-router.post('/update/:id/', createOrUpdateDailyIntake)
-router.get('/:id', getDailyIntakeByDate)
-router.get('/consumed/:id', getConsumedDishes)
-router.delete('/delete', deleteAllDailyIntakes)
+router.post("/update/:id/", createOrUpdateDailyIntake);
+router.get("/:id", getDailyIntakeByDate);
+router.get("/consumed/:id", getConsumedDishes);
+router.delete("/delete", deleteAllDailyIntakes);
 
-module.exports = router
+module.exports = router;
